@@ -115,13 +115,13 @@ app.use((err, req, res, next) => {
     return res.status(statusCode).render("error.ejs", { message });
 });
 
-app.use((err, req, res, next) => {
-    console.error(err);   // prints full error in Render logs
+// app.use((err, req, res, next) => {
+//     console.error(err);   // prints full error in Render logs
 
-    let { statusCode = 500, message = "Something went wrong" } = err;
+//     let { statusCode = 500, message = "Something went wrong" } = err;
 
-    res.status(statusCode).send(message);
-});
+//     res.status(statusCode).send(message);
+// });
 
 // app.listen(8080, () =>{
 //     console.log("Server is running on port 8080");
@@ -129,8 +129,10 @@ app.use((err, req, res, next) => {
 // });
 
 
-const PORT = process.env.PORT || 8080;
+// const PORT = process.env.PORT || 8080;
 
-app.listen(PORT, () =>{
-    console.log(`Server is running on port ${PORT}`);
-});
+// app.listen(PORT, () =>{
+//     console.log(`Server is running on port ${PORT}`);
+// });
+
+module.exports = app;
