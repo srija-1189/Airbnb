@@ -78,9 +78,8 @@ passport.deserializeUser(User.deserializeUser());
 
 
 
-
 app.get("/", (req, res) => {
-    res.render("listings/index"); // or your homepage
+    res.redirect("/listings");
 });
 
 app.use((req, res, next) => {
