@@ -101,15 +101,19 @@ app.all("/*splat", (req, res, next) => {
 app.use((err, req, res, next) => {
     let { statusCode = 500, message = "Something went wrong" } = err;
 
-    if (res.headersSent) {
+    if(res.headersSent){
         return next(err);
     }
 
-    res.status(statusCode).render("error.ejs", { message });
+    return res.status(statusCode).render("error.ejs", { message });
 });
 
-// For Vercel
-module.exports = app;
+const PORT = process.env.PORT || 8080;
+
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
+
 
 
 
