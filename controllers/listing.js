@@ -44,17 +44,22 @@ module.exports.createListing = async (req, res, next) => {
         };
 
         try {
-            const result = await geocoder.geocode(fullAddress);
+           const result = await geocoder.geocode(fullAddress);
 
-            if (result && result.length > 0) {
-                newListing.geometry = {
-                    type: "Point",
-                    coordinates: [
-                        result[0].longitude,
-                        result[0].latitude
-                    ]
-                };
-            }
+console.log("Address:", fullAddress);
+console.log("Geocoder Result:", result);
+
+if (result && result.length > 0) {
+
+    newListing.geometry = {
+        type: "Point",
+        coordinates: [
+            result[0].longitude,
+            result[0].latitude
+        ]
+    };
+
+}
         } catch (err) {
             console.log("Geocoder Error:", err);
         }
