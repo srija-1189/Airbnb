@@ -1,6 +1,8 @@
 const Listing = require("../models/listing.js");
 
 const geocoder = require("../utils/geocoder");
+console.log("Address:", fullAddress);
+console.log("Result:", result);
 
 module.exports.index = async (req, res) =>{
     const allListings = await Listing.find({});
