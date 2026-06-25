@@ -1,8 +1,8 @@
 const Listing = require("../models/listing.js");
 
 const geocoder = require("../utils/geocoder");
-console.log("Address:", fullAddress);
-console.log("Result:", result);
+// console.log("Address:", fullAddress);
+// console.log("Result:", result);
 
 module.exports.index = async (req, res) =>{
     const allListings = await Listing.find({});
@@ -34,24 +34,9 @@ module.exports.showListing = async (req,res)=> {
 module.exports.createListing = async (req, res, next) => {
     try {
 
-        const newListing = new Listing(req.body.listing);
+       const result = await geocoder.geocode(fullAddress);
 
-        const fullAddress =
-            `${req.body.listing.location}, ${req.body.listing.country}`;
-
-        // Default coordinates
-        newListing.geometry = {
-            type: "Point",
-            coordinates: [78.4867, 17.3850]
-        };
-
-        try {
-           const result = await geocoder.geocode(fullAddress);
-
-console.log("Address:", fullAddress);
-console.log("Geocoder Result:", result);
-
-if (result && result.length > 0) {
+if(result.length > 0){
 
     newListing.geometry = {
         type: "Point",
@@ -61,8 +46,7 @@ if (result && result.length > 0) {
         ]
     };
 
-}
-        } catch (err) {
+}   } catch (err) {
             console.log("Geocoder Error:", err);
         }
 
@@ -102,80 +86,80 @@ module.exports.renderEditForm = async (req, res) => {
 };
 
 
-module.exports.updateListing = async (req, res) => {
-    let { id } = req.params;
-
-    let listing = await Listing.findById(id);
-
-    if (!listing) {
-        req.flash("error", "Listing not found!");
-        return res.redirect("/listings");
-    }
-
-    // update fields
-    Object.assign(listing, req.body.listing);
-
-    // update coordinates
-    const fullAddress =
-        `${listing.location}, ${listing.country}`;
-
-    try {
-
-        const result = await geocoder.geocode(fullAddress);
-
-        console.log("Updated address:", fullAddress);
-        console.log("Updated coordinates:", result);
-
-        if (result && result.length > 0) {
-
-            listing.geometry = {
-                type: "Point",
-                coordinates: [
-                    result[0].longitude,
-                    result[0].latitude
-                ]
-            };
-        }
-
-    } catch(err){
-        console.log("Geocoder error:", err);
-    }
-
-    // update image if uploaded
-    if(req.file){
-        listing.image = {
-            url: req.file.path,
-            filename: req.file.filename
-        };
-    }
-
-    await listing.save();
-
-    req.flash("success", "Listing updated successfully!");
-    res.redirect(`/listings/${id}`);
-};
-
 // module.exports.updateListing = async (req, res) => {
 //     let { id } = req.params;
-//     id = id.trim();
 
-//     let listing = await Listing.findByIdAndUpdate(
-//         id,
-//         { ...req.body.listing },
-//         { new: true }
-//     );
+//     let listing = await Listing.findById(id);
 
-//     if (req.file) {
-//         let url = req.file.path;
-//         let filename = req.file.filename;
-
-//         listing.image = { url, filename };
-//         await listing.save();
+//     if (!listing) {
+//         req.flash("error", "Listing not found!");
+//         return res.redirect("/listings");
 //     }
+
+//     // update fields
+//     Object.assign(listing, req.body.listing);
+
+//     // update coordinates
+//     const fullAddress =
+//         `${listing.location}, ${listing.country}`;
+
+//     try {
+
+//         const result = await geocoder.geocode(fullAddress);
+
+//         console.log("Updated address:", fullAddress);
+//         console.log("Updated coordinates:", result);
+
+//         if (result && result.length > 0) {
+
+//             listing.geometry = {
+//                 type: "Point",
+//                 coordinates: [
+//                     result[0].longitude,
+//                     result[0].latitude
+//                 ]
+//             };
+//         }
+
+//     } catch(err){
+//         console.log("Geocoder error:", err);
+//     }
+
+//     // update image if uploaded
+//     if(req.file){
+//         listing.image = {
+//             url: req.file.path,
+//             filename: req.file.filename
+//         };
+//     }
+
+//     await listing.save();
 
 //     req.flash("success", "Listing updated successfully!");
 //     res.redirect(`/listings/${id}`);
 // };
+
+module.exports.updateListing = async (req, res) => {
+    let { id } = req.params;
+    id = id.trim();
+
+    let listing = await Listing.findByIdAndUpdate(
+        id,
+        { ...req.body.listing },
+        { new: true }
+    );
+
+    if (req.file) {
+        let url = req.file.path;
+        let filename = req.file.filename;
+
+        listing.image = { url, filename };
+        await listing.save();
+    }
+
+    req.flash("success", "Listing updated successfully!");
+    res.redirect(`/listings/${id}`);
+};
 
 module.exports.destroyListing =  async (req, res) =>{
     let {id} = req.params;
